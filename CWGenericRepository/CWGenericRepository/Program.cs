@@ -12,16 +12,25 @@ namespace CWGenericRepository
     {
         static void Main(string[] args)
         {
-
             var container = new WindsorContainer();
 
+            // register open generic
             container.Register(Component.For(typeof(IGeneric1<>))
              .ImplementedBy(typeof(Concrete<>)));
 
-            IGeneric1<int> generic = container.Resolve(typeof(IGeneric1<int>)) as IGeneric1<int>;
+            // type we want to use in our open generic
+            var dynamicType = Type.GetType("System.Int32");
+            
+            // get the type of our generic
+            var generic = typeof(IGeneric1<>);
 
+            // make the generic type with our dynamic type
+            var constructed = generic.MakeGenericType(dynamicType);                       
 
-            Console.WriteLine(generic.GetInfo());
+            // resolve our open generic type 
+            IGeneric1<int> genericImpl = container.Resolve(constructed) as IGeneric1<int>;
+
+            Console.WriteLine(genericImpl.GetInfo());
             Console.Read();
 
         }
